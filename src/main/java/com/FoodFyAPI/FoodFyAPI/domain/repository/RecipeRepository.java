@@ -37,34 +37,34 @@ public class RecipeRepository {
         ObjectMapper mapper = new ObjectMapper();
         return mapper.readValue(response.getBody(), new TypeReference<List<Recipe>>(){});
     }
-    public List<Recipe> getRecipeByName(String name) throws JsonProcessingException {
+    public List<Recipe> getRecipesByName(String name) throws JsonProcessingException {
         RestTemplate restTemplate = new RestTemplate();
 
-        // Codificar el nombre de la receta para evitar caracteres especiales (por ejemplo, espacios)
-        String encodedName = name.replace(" ", "%20");
-
-        // Construir la URL de la consulta
-        String url = "https://rucbhgfoenrugccimfvv.supabase.co/rest/v1/recipes?select=*&title=eq." + encodedName;
-
-        // Obtener los encabezados necesarios
         HttpEntity<String> entity = getStringHttpEntity();
-
-        // Realizar la solicitud GET
+        String url = String.format("https://rucbhgfoenrugccimfvv.supabase.co/rest/v1/recipes?title=eq.%s&select=*",name);
         ResponseEntity<String> response = restTemplate.exchange(
-                url,              // URL construida con el filtro por nombre
-                HttpMethod.GET,   // Método GET
-                entity,           // Encabezados con apikey y autorización
-                String.class      // Tipo de respuesta que esperamos
+                url,
+                HttpMethod.GET,
+                entity,
+                String.class
         );
 
-        // Convertir la respuesta JSON en una lista de objetos Recipe
         ObjectMapper mapper = new ObjectMapper();
-        return mapper.readValue(response.getBody(), new TypeReference<List<Recipe>>() {});
+        return mapper.readValue(response.getBody(), new TypeReference<List<Recipe>>(){});
     }
+    public List<Recipe> getRecipeByServingCocking(String time) throws JsonProcessingException {
+        RestTemplate restTemplate = new RestTemplate();
 
+        HttpEntity<String> entity = getStringHttpEntity();
+        String url = String.format("https://rucbhgfoenrugccimfvv.supabase.co/rest/v1/recipes?coocking_time=eq.%s&select=*",time);
+        ResponseEntity<String> response = restTemplate.exchange(
+                url,
+                HttpMethod.GET,
+                entity,
+                String.class
+        );
 
-    public static void main(String[] args) throws IOException, InterruptedException {
-        RecipeRepository repository = new RecipeRepository();
-        System.out.println(repository.getRecipeByName("Sopa de lentejas"));;
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.readValue(response.getBody(), new TypeReference<List<Recipe>>(){});
     }
 }
